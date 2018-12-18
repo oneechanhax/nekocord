@@ -1,10 +1,9 @@
-# Gui Mate
-A simple primitive graphical user interface api for the big brained...
-Written in C++
+# Nekocord
+A lightning fast discord library for c++   
 
 ## Note~
-This application and api is only for making and getting a gui working and running for nekohook, sorry if you cant port it easily to your platform.
-Also, should this even be called an api :thinking:
+This is very new, alot of things arent ready for production and are kinda unstable.   
 
-## Another Note~
-Dont yell at me for shitty code base, only stuff actually kept clean is in the gui code itself not in the stuff supporting it.
+## Bugs
+1. You shouldnt edit things(they arent const but its annoying to code in because oop)   
+2. Websocket doesnt properly reconnect after a disconnect
