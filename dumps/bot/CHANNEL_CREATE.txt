@@ -1,0 +1,13 @@
+{
+    "type": 1,
+    "recipients": [
+        {
+            "username": "Onee",
+            "id": "119674592712196098",
+            "discriminator": "0695",
+            "avatar": "b428a73b19ad37a69387d96300e393cd"
+        }
+    ],
+    "last_message_id": "524010127007678464",
+    "id": "524010115561422848"
+}

@@ -1,0 +1,572 @@
+{
+    "widget_enabled": false,
+    "widget_channel_id": null,
+    "verification_level": 2,
+    "system_channel_id": null,
+    "splash": null,
+    "roles": [
+        {
+            "position": 3,
+            "permissions": 0,
+            "name": "Nekohook user(windows)",
+            "mentionable": false,
+            "managed": false,
+            "id": "401614341306187776",
+            "hoist": true,
+            "color": 10181046
+        },
+        {
+            "position": 4,
+            "permissions": 0,
+            "name": "Patron Supporter",
+            "mentionable": false,
+            "managed": false,
+            "id": "371268114316525569",
+            "hoist": true,
+            "color": 1752220
+        },
+        {
+            "position": 11,
+            "permissions": 8,
+            "name": "admin",
+            "mentionable": false,
+            "managed": false,
+            "id": "371196416435027970",
+            "hoist": false,
+            "color": 0
+        },
+        {
+            "position": 1,
+            "permissions": 0,
+            "name": "Registered",
+            "mentionable": false,
+            "managed": false,
+            "id": "371269070647197699",
+            "hoist": false,
+            "color": 6713087
+        },
+        {
+            "position": 7,
+            "permissions": 2080374807,
+            "name": "God",
+            "mentionable": false,
+            "managed": false,
+            "id": "385044728317476865",
+            "hoist": true,
+            "color": 15277667
+        },
+        {
+            "position": 6,
+            "permissions": 201465862,
+            "name": "moddie bois",
+            "mentionable": false,
+            "managed": false,
+            "id": "415242723780460544",
+            "hoist": true,
+            "color": 10181046
+        },
+        {
+            "position": 9,
+            "permissions": 0,
+            "name": "Head Developers",
+            "mentionable": false,
+            "managed": false,
+            "id": "371196035667591175",
+            "hoist": true,
+            "color": 15277667
+        },
+        {
+            "position": 10,
+            "permissions": 67108872,
+            "name": "Catbot",
+            "mentionable": true,
+            "managed": false,
+            "id": "371260612644175882",
+            "hoist": true,
+            "color": 16085759
+        },
+        {
+            "position": 5,
+            "permissions": 0,
+            "name": "dev",
+            "mentionable": false,
+            "managed": false,
+            "id": "443264809996255243",
+            "hoist": false,
+            "color": 0
+        },
+        {
+            "position": 8,
+            "permissions": 104324161,
+            "name": "Helper Developers",
+            "mentionable": false,
+            "managed": false,
+            "id": "397920585314861072",
+            "hoist": true,
+            "color": 11342935
+        },
+        {
+            "position": 0,
+            "permissions": 104324161,
+            "name": "@everyone",
+            "mentionable": false,
+            "managed": false,
+            "id": "371194211631890454",
+            "hoist": false,
+            "color": 0
+        },
+        {
+            "position": 2,
+            "permissions": 0,
+            "name": "Nekohook user(linux)",
+            "mentionable": false,
+            "managed": false,
+            "id": "371291160125374474",
+            "hoist": true,
+            "color": 9853437
+        }
+    ],
+    "region": "us-central",
+    "owner_id": "121179116291489794",
+    "name": "Nekohook Softwar",
+    "mfa_level": 0,
+    "max_presences": null,
+    "max_members": 250000,
+    "id": "371194211631890454",
+    "icon": "70fb04dd6c1569854429362c68ddfe12",
+    "features": [],
+    "explicit_content_filter": 1,
+    "emojis": [
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "6a1M03e",
+            "managed": false,
+            "id": "396000397627490315",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "pfkg2E9neS8ryQDKRzCx9v7gDyACb8vB",
+            "managed": false,
+            "id": "396000397677953045",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "TJ2bGh1hSLIJ7J3rIfOWQ2D32bSD4tdx",
+            "managed": false,
+            "id": "396000397749256215",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "357632901292228621",
+            "managed": false,
+            "id": "396000397870759947",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "pythonk",
+            "managed": false,
+            "id": "396000397992394753",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "2pay7ulrj0uy",
+            "managed": false,
+            "id": "396000398009171975",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "0r6n9etj0uy",
+            "managed": false,
+            "id": "396000398063829003",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "highThonk",
+            "managed": false,
+            "id": "396000398076411914",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "gnikniht",
+            "managed": false,
+            "id": "396000398093320192",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "349210402300755978",
+            "managed": false,
+            "id": "396000398105903106",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "M5fqYZpqkwaEoovyqzdgrO8uk3pFRaVm",
+            "managed": false,
+            "id": "396000398349041665",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "7yOcCmn5yjSkmNSOAzpPEZ8gbbz2lcEZ",
+            "managed": false,
+            "id": "396000398378401803",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "340240139743789056",
+            "managed": false,
+            "id": "396000398600831013",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "richThink",
+            "managed": false,
+            "id": "396000398789443584",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "332174447417229312",
+            "managed": false,
+            "id": "396000398818672650",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thk",
+            "managed": false,
+            "id": "396000399682699274",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "332999071214206977",
+            "managed": false,
+            "id": "396000400093741056",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkafication",
+            "managed": false,
+            "id": "396000400353918986",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "okThink",
+            "managed": false,
+            "id": "396000400399925249",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "petaThink",
+            "managed": false,
+            "id": "396000400555114510",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "3258078658413199471",
+            "managed": false,
+            "id": "396000400978739211",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkception",
+            "managed": false,
+            "id": "396000401251368969",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkingNoHands",
+            "managed": false,
+            "id": "396000401524129802",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkPlant",
+            "managed": false,
+            "id": "396000401779982336",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "325807853925433346",
+            "managed": false,
+            "id": "396000401809473536",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinksDown",
+            "managed": false,
+            "id": "396000402455265280",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "nanoThink",
+            "managed": false,
+            "id": "396000402547539978",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "306263458419179520",
+            "managed": false,
+            "id": "396000402681757697",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkPride",
+            "managed": false,
+            "id": "396000402706923523",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "xdThink",
+            "managed": false,
+            "id": "396000402736414728",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thongry",
+            "managed": false,
+            "id": "396000402786484225",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkUp",
+            "managed": false,
+            "id": "396000402912313344",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "268552117885599745",
+            "managed": false,
+            "id": "396000402987810826",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkGrape",
+            "managed": false,
+            "id": "396000403008913430",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "overThink",
+            "managed": false,
+            "id": "396000404367736836",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "325807877728108544",
+            "managed": false,
+            "id": "396000404460273665",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "325807792684531723",
+            "managed": false,
+            "id": "396000404514537474",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkYang",
+            "managed": false,
+            "id": "396000404560674836",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "327257769033990154",
+            "managed": false,
+            "id": "396000404615331840",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thinkFish",
+            "managed": false,
+            "id": "396000404665663488",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "lennyThink",
+            "managed": false,
+            "id": "396000404678115328",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "thrugging",
+            "managed": false,
+            "id": "396000404703412224",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "342820814229602334",
+            "managed": false,
+            "id": "396000404812464159",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "Fuck_that",
+            "managed": false,
+            "id": "396000440975884289",
+            "animated": true
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "df84f56",
+            "managed": false,
+            "id": "396000443299266571",
+            "animated": true
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "think_earth",
+            "managed": false,
+            "id": "396000451818160138",
+            "animated": true
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "bomb_think_by_heyitsshugadbigt2x",
+            "managed": false,
+            "id": "396001129995173897",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "clapking",
+            "managed": false,
+            "id": "396001241769181195",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "cutting",
+            "managed": false,
+            "id": "396001242184417293",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "partyThink",
+            "managed": false,
+            "id": "396001408853213187",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "peachThink",
+            "managed": false,
+            "id": "396001408882573312",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "SRUaTRv4PTE_wiYp9uJ7XJHmLH4MKWSn",
+            "managed": false,
+            "id": "396001497487245333",
+            "animated": false
+        },
+        {
+            "roles": [],
+            "require_colons": true,
+            "name": "Suiciding",
+            "managed": false,
+            "id": "396001538419589133",
+            "animated": false
+        }
+    ],
+    "embed_enabled": false,
+    "embed_channel_id": null,
+    "default_message_notifications": 1,
+    "application_id": null,
+    "afk_timeout": 300,
+    "afk_channel_id": null,
+    "guild_id": "371194211631890454"
+}

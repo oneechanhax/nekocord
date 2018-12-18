@@ -1,0 +1,26 @@
+
+# Visual Studio 2015 cache/options directory
+.vs/
+# Visual Studio Code
+.vscode/
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+
+# Cmake Build files
+CMakeFiles/*
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/*
+
+# Binaries
+libnekolib.a
+libnekolib.so

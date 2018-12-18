@@ -1,0 +1,17 @@
+{
+    "user": {
+        "username": "FestiveSummer",
+        "id": "434337274352762891",
+        "discriminator": "6739",
+        "avatar": "af8b126ff567d588db626fd2237a248f"
+    },
+    "status": "offline",
+    "roles": [
+        "441628840457142272"
+    ],
+    "nick": null,
+    "guild_id": "441624304417767444",
+    "game": null,
+    "client_status": {},
+    "activities": []
+}

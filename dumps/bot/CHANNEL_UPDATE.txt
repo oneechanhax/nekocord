@@ -1,0 +1,26 @@
+{
+    "type": 0,
+    "topic": "Updates to nekohook will be posted here!",
+    "rate_limit_per_user": 0,
+    "position": 2,
+    "permission_overwrites": [
+        {
+            "type": "role",
+            "id": "371269070647197699",
+            "deny": 871823441,
+            "allow": 66560
+        },
+        {
+            "type": "role",
+            "id": "371194211631890454",
+            "deny": 871890001,
+            "allow": 0
+        }
+    ],
+    "parent_id": "371197833602400266",
+    "nsfw": false,
+    "name": "updates",
+    "last_message_id": "521318321262428162",
+    "id": "371198436931928066",
+    "guild_id": "371194211631890454"
+}

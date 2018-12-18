@@ -1,0 +1,34 @@
+{
+    "member": {
+        "user": {
+            "username": "Justus",
+            "id": "167746971585609728",
+            "discriminator": "0615",
+            "avatar": "429bba048d3757c35a85387e38c24e22"
+        },
+        "roles": [
+            "281180178535677964",
+            "379917962863181824",
+            "425694176806567962",
+            "445349023625379841",
+            "465372266151149569",
+            "496779303149633536",
+            "496780591421849620",
+            "496781644208930816"
+        ],
+        "nick": "Justus",
+        "mute": false,
+        "joined_at": "2017-12-19T19:23:25.358000+00:00",
+        "deaf": false
+    },
+    "user_id": "167746971585609728",
+    "suppress": true,
+    "session_id": "675022d61a563db8a63800500e4c5c6c",
+    "self_video": false,
+    "self_mute": true,
+    "self_deaf": true,
+    "mute": false,
+    "guild_id": "254778727530102794",
+    "deaf": false,
+    "channel_id": null
+}

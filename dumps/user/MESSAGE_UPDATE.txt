@@ -1,0 +1,17 @@
+{
+    "id": "523895311433990154",
+    "embeds": [
+        {
+            "url": "https://dubu.is-a-good-waifu.com/7782dc.png",
+            "type": "image",
+            "thumbnail": {
+                "width": 1830,
+                "url": "https://dubu.is-a-good-waifu.com/7782dc.png",
+                "proxy_url": "https://images-ext-2.discordapp.net/external/rl8m3uDiRFXoGdjCy22FiRw1Eas4bCuyC78PqFAspak/https/dubu.is-a-good-waifu.com/7782dc.png",
+                "height": 766
+            }
+        }
+    ],
+    "channel_id": "381880193700069377",
+    "guild_id": "381880193251409931"
+}

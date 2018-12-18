@@ -1,0 +1,41 @@
+{
+    "type": 0,
+    "tts": false,
+    "timestamp": "2018-12-16T16:12:20.671000+00:00",
+    "pinned": false,
+    "nonce": "523895163496431616",
+    "mentions": [],
+    "mention_roles": [],
+    "mention_everyone": false,
+    "member": {
+        "roles": [
+            "451800852705837056",
+            "507527243510317056",
+            "381891844067557378",
+            "440150072471060484",
+            "521683883637342208",
+            "433625424854253578",
+            "381925587507478530",
+            "496294323793559562",
+            "443448867044851722",
+            "422476200993357834"
+        ],
+        "nick": "nox",
+        "mute": false,
+        "joined_at": "2017-11-20T19:00:09.196000+00:00",
+        "deaf": false
+    },
+    "id": "523895164301869065",
+    "embeds": [],
+    "edited_timestamp": null,
+    "content": "<a:aPeepoDetective:421054275561586698> stare at it and laugh because youll never afford it",
+    "channel_id": "381880193700069377",
+    "author": {
+        "username": "Noxim",
+        "id": "210141176211177474",
+        "discriminator": "6410",
+        "avatar": "a_0f3a2b7585293d2726f7af4e10a83518"
+    },
+    "attachments": [],
+    "guild_id": "381880193251409931"
+}

@@ -1,0 +1,34 @@
+{
+    "type": 0,
+    "tts": false,
+    "timestamp": "2018-12-18T20:37:36.593000+00:00",
+    "pinned": false,
+    "nonce": "524686695963033600",
+    "mentions": [],
+    "mention_roles": [],
+    "mention_everyone": false,
+    "member": {
+        "roles": [
+            "371196035667591175",
+            "371196416435027970",
+            "371269070647197699"
+        ],
+        "nick": "butte",
+        "mute": false,
+        "joined_at": "2017-10-21T07:25:36.237000+00:00",
+        "deaf": false
+    },
+    "id": "524686696248377365",
+    "embeds": [],
+    "edited_timestamp": null,
+    "content": "!ping",
+    "channel_id": "371238030201192459",
+    "author": {
+        "username": "Onee",
+        "id": "119674592712196098",
+        "discriminator": "0695",
+        "avatar": "b428a73b19ad37a69387d96300e393cd"
+    },
+    "attachments": [],
+    "guild_id": "371194211631890454"
+}

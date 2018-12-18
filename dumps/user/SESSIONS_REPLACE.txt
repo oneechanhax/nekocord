@@ -1,0 +1,119 @@
+[
+    {
+        "status": "online",
+        "session_id": "all",
+        "game": {
+            "type": 0,
+            "timestamps": {
+                "start": 1544933661000
+            },
+            "state": "Editing client.cpp",
+            "name": "Atom Editor",
+            "id": "212dce5c4186aa1b",
+            "details": "Working on curl-test",
+            "created_at": 1544977283524,
+            "assets": {
+                "small_text": "Working with Atom",
+                "small_image": "386325567483412490",
+                "large_text": "Editing a C++ file",
+                "large_image": "380684204326780929"
+            },
+            "application_id": "380510159094546443"
+        },
+        "client_info": {
+            "version": 0,
+            "os": "unknown",
+            "client": "unknown"
+        },
+        "activities": [
+            {
+                "type": 0,
+                "timestamps": {
+                    "start": 1544933661000
+                },
+                "state": "Editing client.cpp",
+                "name": "Atom Editor",
+                "id": "212dce5c4186aa1b",
+                "details": "Working on curl-test",
+                "created_at": 1544977283524,
+                "assets": {
+                    "small_text": "Working with Atom",
+                    "small_image": "386325567483412490",
+                    "large_text": "Editing a C++ file",
+                    "large_image": "380684204326780929"
+                },
+                "application_id": "380510159094546443"
+            }
+        ],
+        "active": true
+    },
+    {
+        "status": "online",
+        "session_id": "b939d35f3a6231b89a2b4928a47b385c",
+        "game": null,
+        "client_info": {
+            "version": 0,
+            "os": "linux",
+            "client": "web"
+        },
+        "activities": []
+    },
+    {
+        "status": "online",
+        "session_id": "c5ba9cee2bce2a5197db02c537fc00e4",
+        "game": {
+            "type": 0,
+            "timestamps": {
+                "start": 1544933661000
+            },
+            "state": "Editing client.cpp",
+            "name": "Atom Editor",
+            "id": "212dce5c4186aa1b",
+            "details": "Working on curl-test",
+            "created_at": 1544977283524,
+            "assets": {
+                "small_text": "Working with Atom",
+                "small_image": "386325567483412490",
+                "large_text": "Editing a C++ file",
+                "large_image": "380684204326780929"
+            },
+            "application_id": "380510159094546443"
+        },
+        "client_info": {
+            "version": 0,
+            "os": "linux",
+            "client": "desktop"
+        },
+        "activities": [
+            {
+                "type": 0,
+                "timestamps": {
+                    "start": 1544933661000
+                },
+                "state": "Editing client.cpp",
+                "name": "Atom Editor",
+                "id": "212dce5c4186aa1b",
+                "details": "Working on curl-test",
+                "created_at": 1544977283524,
+                "assets": {
+                    "small_text": "Working with Atom",
+                    "small_image": "386325567483412490",
+                    "large_text": "Editing a C++ file",
+                    "large_image": "380684204326780929"
+                },
+                "application_id": "380510159094546443"
+            }
+        ]
+    },
+    {
+        "status": "online",
+        "session_id": "f4b7eada2a8a40cbce5aac57f573636b",
+        "game": null,
+        "client_info": {
+            "version": 0,
+            "os": "linux",
+            "client": "web"
+        },
+        "activities": []
+    }
+]
