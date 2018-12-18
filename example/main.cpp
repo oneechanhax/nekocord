@@ -1,16 +1,35 @@
 
+/*
+ * Nekocord: A lightning fast discord library for c++
+ * Copyright (C) 2018 Rebekah Rowe
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #include <fstream>
 
 #include <neko/discord/nekocord.hpp>
 
-/*static bool StartsWith(std::string_view str, std::string_view with) {
+// cpp 20 where are you ;(
+static bool StartsWith(std::string_view str, std::string_view with) {
     if (str.size() < with.size())
         return false;
     for (int i = 0; i < with.size(); i++)
         if (str[i] != with[i])
             return false;
     return true;
-}*/
+}
 
 using namespace neko::discord;
 class Discord : public BaseClient {
@@ -23,7 +42,7 @@ public:
         printf("Found new guild: %s!\n", guild.name.c_str());
     }
     void onMessageCreate(Message& msg) {
-        if (msg.content == "!ping")
+        if (StartsWith(msg.content, "!ping"))
             msg.Reply("Pong!");
     }
 };
