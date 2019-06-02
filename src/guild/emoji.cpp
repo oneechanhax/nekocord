@@ -36,13 +36,11 @@ Emoji::Emoji(Guild& _guild, const rapidjson::Value& data)
     for (const rapidjson::Value& role : data["roles"].GetArray())
         this->roles.push_back(atol(role.GetString()));
 
-    this->client.emojis.push_back(this);
+    this->client.emojis.insert({this->id, this});
 }
 
 Emoji::~Emoji() {
-    auto find = std::find(this->client.emojis.begin(),
-                this->client.emojis.end(), this);
-    this->client.emojis.erase(find);
+    this->client.emojis.erase(this->id);
 }
 
 

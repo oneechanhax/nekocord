@@ -23,9 +23,9 @@
 #include "guild/channel.hpp"
 
 namespace neko::discord {
-using namespace rapidjson;
+namespace rj = rapidjson;
 
-PermissionOverwrite::PermissionOverwrite(const Value& data) {
+PermissionOverwrite::PermissionOverwrite(const rj::Value& data) {
     this->id = atol(data["id"].GetString());
     this->type = data["type"].GetString();
     this->allow = data["allow"].GetInt();
@@ -33,7 +33,7 @@ PermissionOverwrite::PermissionOverwrite(const Value& data) {
 }
 
 // GUILD_CREATE
-GuildChannel::GuildChannel(Channel& _channel, Guild& _guild, const Value& data)
+GuildChannel::GuildChannel(Channel& _channel, Guild& _guild, const rj::Value& data)
     : channel(_channel), guild(_guild) {
 
     auto find = data.FindMember("nsfw");
@@ -49,22 +49,19 @@ GuildChannel::GuildChannel(Channel& _channel, Guild& _guild, const Value& data)
     }
     this->position = data["position"].GetInt();
 
-    for (const Value& overwrite : data["permission_overwrites"].GetArray())
+    for (const rj::Value& overwrite : data["permission_overwrites"].GetArray())
         this->permission_overwrites.push_back(PermissionOverwrite(overwrite));
 
-    this->guild.channels.push_back(this);
+    this->guild.channels.insert({this->channel.id, this});
 }
 
 // CHANNEL_DELETE
 GuildChannel::~GuildChannel(){
-    auto find = std::find_if(this->guild.channels.begin(),
-                this->guild.channels.end(), [&](auto& c)
-                { return c->channel.id == this->channel.id; });
-    this->guild.channels.erase(find);
+    this->guild.channels.erase(this->channel.id);
 }
 
 // CHANNEL_UPDATE
-void GuildChannel::Update(const Value& data) {
+void GuildChannel::Update(const rj::Value& data) {
     // TODO
     return;
 }

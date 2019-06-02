@@ -72,13 +72,12 @@ public:
     Snowflake id;
 
     enum class Type {
-        kNone = -1, // For init
         kDm = 1,
         kGroupDm = 3,
         kText = 0, // Guild only below
         kVoice = 2,
         kCategory = 4
-    } type = Type::kNone;
+    } type;
 
     DMChannel& GetDMChannel();
     GroupDMChannel& GetGroupDMChannel();

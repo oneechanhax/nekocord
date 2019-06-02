@@ -33,22 +33,16 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # Dependancies
 # Cpr
 set(USE_SYSTEM_CURL ON)
-add_subdirectory("external/cpr")
-set(NEKOCORD_INCLUDE_DIRS ${CPR_INCLUDE_DIRS})
-set(NEKOCORD_LINK_LIBS ${CPR_LIBRARIES})
+set(NEKOCORD_LINK_LIBS cpr)
 
 # Websocketpp
 find_package(OpenSSL REQUIRED)
-set(NEKOCORD_INCLUDE_DIRS ${NEKOCORD_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/external/websocketpp)
 set(NEKOCORD_LINK_LIBS ${NEKOCORD_LINK_LIBS} ${OPENSSL_LIBRARIES})
 
 # Nekolib
 add_subdirectory("external/nekolib")
 set(NEKOCORD_INCLUDE_DIRS ${NEKOCORD_INCLUDE_DIRS} ${NEKOLIB_INCLUDE_DIRS})
 set(NEKOCORD_LINK_LIBS ${NEKOCORD_LINK_LIBS} ${NEKOLIB_LIBRARIES})
-
-# Rapidjson
-set(NEKOCORD_INCLUDE_DIRS ${NEKOCORD_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/external/rapidjson/include)
 
 # Export info
 set(NEKOCORD_FOUND true PARENT_SCOPE)

@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include <rapidjson/document.h>
 
 #include "emoji.hpp"
@@ -26,16 +28,17 @@
 #include "role.hpp"
 
 namespace neko::discord {
+namespace json = rapidjson;
 
 // TODO, what is "features" and what do i do with it???
 class BaseClient;
 class GuildChannel;
 class Guild {
     friend BaseClient;
-    Guild(BaseClient& _client, const rapidjson::Value&);
-    Guild(BaseClient& _client, Snowflake, const rapidjson::Value&);
-    Guild& Create(const rapidjson::Value&); // GUILD_CREATE
-    Guild& Update(const rapidjson::Value&); // GUILD_UPDATE
+    Guild(BaseClient& _client, const json::Value&);
+    Guild(BaseClient& _client, Snowflake, const json::Value&);
+    Guild& Create(const json::Value&); // GUILD_CREATE
+    Guild& Update(const json::Value&); // GUILD_UPDATE
     // GUILD_DELETE
     ~Guild();
 public:
@@ -43,10 +46,10 @@ public:
     bool unavailable; // The guild could be unavailable
     Snowflake id;
 
-    std::vector<GuildChannel*> channels;
-    std::vector<Emoji*> emojis;
-    std::vector<Role> roles;
-    std::vector<GuildMember> members;
+    std::unordered_map<Snowflake, GuildChannel*> channels;
+    std::unordered_map<Snowflake, Emoji*> emojis;
+    std::unordered_map<Snowflake, Role> roles;
+    std::unordered_map<Snowflake, GuildMember*> members;
     int explicit_content_filter;
     std::string icon;
     std::string joined_at; // TODO, parse this into some actual cpp format

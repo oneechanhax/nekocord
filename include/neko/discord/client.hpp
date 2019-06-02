@@ -21,15 +21,16 @@
 
 #include <rapidjson/document.h>
 
-#include "web/http.hpp"
-#include "web/websocket.hpp"
+#include "api/http.hpp"
+#include "api/shard.hpp"
 #include "presence.hpp"
 #include "snowflake.hpp"
 
 namespace neko::discord {
+namespace json = rapidjson;
 
 // Extracts "id" from json. Usefil for the other classes
-Snowflake ExtractId(const rapidjson::Value&);
+Snowflake ExtractId(const json::Value&);
 
 class Guild;
 class GuildMember;
@@ -41,7 +42,8 @@ class Emoji;
 class BaseClient {
 public:
     BaseClient();
-    void Login(std::string_view token);
+    void Login(std::string_view token, int num_shards = 1);
+    void Disconnect();
 // Events
 protected:
     virtual void onReady(){}
@@ -49,6 +51,7 @@ protected:
     virtual void onMessageCreate(Message&){}
     virtual void onChannelCreate(Channel&){}
     virtual void onGuildUpdate(Guild&) {}
+    virtual void onDisconnect() {}
 // Info retrieval
 public:
     const User& FetchClientUser();
@@ -64,21 +67,22 @@ public:
 
 // Internal events
 private:
-    void onReady(const rapidjson::Value&);
-    void onGuildCreate(const rapidjson::Value&);
-    void onMessageCreate(const rapidjson::Value&);
-    void onChannelCreate(const rapidjson::Value&);
-    void onGuildUpdate(const rapidjson::Value&);
+    void onReady(const json::Value&);
+    void onGuildCreate(const json::Value&);
+    void onMessageCreate(const json::Value&);
+    void onChannelCreate(const json::Value&);
+    void onGuildUpdate(const json::Value&);
+
 
 // Cache
     User* user;
-    std::vector<Channel*> channels;
-    std::vector<Emoji*> emojis;
-    std::vector<Guild*> guilds;
-    std::vector<Presence> presences;
-    std::vector<User*> users;
+    std::unordered_map<Snowflake, Channel*> channels;
+    std::unordered_map<Snowflake, Emoji*> emojis;
+    std::unordered_map<Snowflake, Guild*> guilds;
+    std::unordered_map<Snowflake, Presence> presences;
+    std::unordered_map<Snowflake, User*> users;
 
-    friend Guild;
+    friend Guild; // So they can fill the cache themselves
     friend Channel;
     friend DMChannel;
     friend GroupDMChannel;
@@ -86,12 +90,12 @@ private:
     friend GuildMember;
     friend Message;
     // This fetch user takes in data and caches it
-    User& FetchUser(Snowflake, const rapidjson::Value&);
-    inline User& FetchUser(const rapidjson::Value& v) {
+    User& FetchUser(Snowflake, const json::Value&);
+    inline User& FetchUser(const json::Value& v) {
         return this->FetchUser(ExtractId(v), v);
     }
-    Guild& FetchGuild(Snowflake, const rapidjson::Value&);
-    inline Guild& FetchGuild(const rapidjson::Value& v) {
+    Guild& FetchGuild(Snowflake, const json::Value&);
+    inline Guild& FetchGuild(const json::Value& v) {
         return this->FetchGuild(ExtractId(v), v);
     }
 
@@ -101,10 +105,9 @@ private:
     friend web::HttpMgr;
     web::HttpMgr http;
 
-    friend web::Websocket;
-    web::Websocket websocket;
-    std::string session_id;
-    void EmitEvent(std::string_view event, const rapidjson::Value& msg);
+    friend api::Shard;
+    std::vector<api::Shard*> shards;
+    void EmitEvent(std::string_view event, const json::Value& msg);
 };
 
 }

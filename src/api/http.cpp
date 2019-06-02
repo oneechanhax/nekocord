@@ -25,7 +25,7 @@
 #include "user.hpp"
 #include "client.hpp"
 
-#include "web/http.hpp"
+#include "api/http.hpp"
 
 namespace neko::discord::web {
 
@@ -59,7 +59,7 @@ std::int32_t HttpMgr::Post(const std::string& url, const rapidjson::Value& msg) 
     Writer<StringBuffer> writer(buf);
     msg.Accept(writer);
     // Send away
-    return this->Post(url, std::string(buf.GetString(), buf.GetLength()));
+    return this->Post(url, std::string(buf.GetString(), buf.GetSize()));
 }
 std::int32_t HttpMgr::Post(const std::string& url, const std::string& msg) {
     RateLimiter::Type t = this->rate_limiter.Enforce(url);

@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <rapidjson/document.h>
 
 #include "../snowflake.hpp"
@@ -43,6 +45,10 @@ public:
     bool mute;
     std::string nick;
     std::vector<Snowflake> roles;
+
+public:
+    bool HasRole(Snowflake);
+    bool HasRole(Role&);
 };
 
 }

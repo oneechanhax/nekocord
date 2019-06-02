@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <vector>
 #include <rapidjson/document.h>
 
 #include "../snowflake.hpp"

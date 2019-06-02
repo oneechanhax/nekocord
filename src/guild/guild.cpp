@@ -20,16 +20,17 @@
 #include "guild/channel.hpp"
 #include "client.hpp"
 #include "channel.hpp"
+#include "user.hpp"
 
 #include "guild/guild.hpp"
 
 namespace neko::discord {
-using namespace rapidjson;
+namespace rj = rapidjson;
 
 // GUILD_CREATE
-Guild::Guild(BaseClient& _client, const Value& data)
+Guild::Guild(BaseClient& _client, const rj::Value& data)
     : Guild(_client, ExtractId(data), data) {}
-Guild::Guild(BaseClient& _client, Snowflake id, const Value& data) : client(_client) {
+Guild::Guild(BaseClient& _client, Snowflake id, const rj::Value& data) : client(_client) {
     this->id = id;
 
     this->unavailable = data["unavailable"].GetBool();
@@ -40,22 +41,26 @@ Guild::Guild(BaseClient& _client, Snowflake id, const Value& data) : client(_cli
 }
 
 // GUILD_CREATE, call this function if it already exists instead of creating a new one
-Guild& Guild::Create(const Value& data) {
+Guild& Guild::Create(const rj::Value& data) {
     this->joined_at = data["joined_at"].GetString();
     this->member_count = data["member_count"].GetInt();
 
     // these change on another event
-    for (const Value& member : data["members"].GetArray())
-        this->members.emplace_back(*this, member);
+    for (const rj::Value& member : data["members"].GetArray()) {
+        GuildMember* new_mem = new GuildMember(*this, member);
+        this->members.insert({new_mem->user.id, new_mem});
+    }
 
-    for (const Value& channel : data["channels"].GetArray())
-        this->client.channels.push_back(new Channel(*this, channel));
+    for (const rj::Value& channel : data["channels"].GetArray()) {
+        Channel* new_channel = new Channel(*this, channel);
+        this->client.channels.insert({new_channel->id, new_channel});
+    }
 
     return this->Update(data);
 }
 
 // GUILD_CREATE GUILD_UPDATE
-Guild& Guild::Update(const Value& data) {
+Guild& Guild::Update(const rj::Value& data) {
 
     this->explicit_content_filter = data["explicit_content_filter"].GetInt();
     this->icon = data["icon"].GetString();
@@ -64,15 +69,19 @@ Guild& Guild::Update(const Value& data) {
     this->owner_id = atol(data["owner_id"].GetString());
 
     // delete all emojis
-    for (Emoji* i : this->emojis)
-        delete i;
+    for (auto i : this->emojis)
+        delete i.second;
     this->emojis.clear();
-    for (const Value& emoji : data["emojis"].GetArray())
-        this->emojis.push_back(new Emoji(*this, emoji));
+    for (const rj::Value& emoji : data["emojis"].GetArray()) {
+        Emoji* new_emoji = new Emoji(*this, emoji);
+        this->emojis.insert({new_emoji->id, new_emoji});
+    }
 
     this->roles.clear();
-    for (const Value& role : data["roles"].GetArray())
-        this->roles.push_back(Role(*this, role));
+    for (const rj::Value& role : data["roles"].GetArray()) {
+        Snowflake id = atol(role["id"].GetString());
+        this->roles.insert({id, Role(*this, id, role)});
+    }
 
     return *this;
 }
@@ -80,28 +89,28 @@ Guild& Guild::Update(const Value& data) {
 Guild::~Guild(){
     // Clean out the channels
     for (auto i = this->client.channels.begin(); i != this->client.channels.end(); i++) {
-        if (((*i)->type == Channel::Type::kText ||
-             (*i)->type == Channel::Type::kCategory ||
-             (*i)->type == Channel::Type::kVoice) &&
-             (*i)->GetGuildChannel().guild.id == this->id)
+        if ((i->second->type == Channel::Type::kText ||
+             i->second->type == Channel::Type::kCategory ||
+             i->second->type == Channel::Type::kVoice) &&
+             i->second->GetGuildChannel().guild.id == this->id)
             this->client.channels.erase(i);
     }
-    for (Emoji* i : this->emojis)
-        delete i;
+    for (auto i : this->emojis)
+        delete i.second;
 }
 
 GuildChannel& Guild::FetchChannel(Snowflake id, bool cache) {
     if (cache) {
-        auto find = std::find_if(this->channels.begin(), this->channels.end(), [&](auto& c){ return c->channel.id == id; });
+        auto find = this->channels.find(id);
         if (find != this->channels.end())
-            return **find;
+            return *find->second;
     }
     std::string r = this->client.http.Get("/channels/" + std::to_string(id));
-    Document data;
+    rj::Document data;
     data.Parse(r.data(), r.size());
 
     Channel* new_channel = new Channel(this->client, data);
-    this->client.channels.push_back(new_channel);
+    this->client.channels.insert({new_channel->id, new_channel});
     if (new_channel->type != Channel::Type::kText ||
         new_channel->type != Channel::Type::kCategory ||
         new_channel->type != Channel::Type::kVoice)
@@ -109,10 +118,10 @@ GuildChannel& Guild::FetchChannel(Snowflake id, bool cache) {
     return new_channel->GetGuildChannel();
 }
 Role& Guild::FetchRole(Snowflake id){
-    auto find = std::find_if(this->roles.begin(), this->roles.end(), [&](auto& r){ return r.id == id; });
+    auto find = this->roles.find(id);
     if (find == this->roles.end())
         throw std::runtime_error("Cant find role!");
-    return *find;
+    return find->second;
 }
 
 }

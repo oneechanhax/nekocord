@@ -31,6 +31,7 @@ class GuildMember;
 class Role {
 public:
     Role(Guild&, const rapidjson::Value&);
+    Role(Guild&, Snowflake, const rapidjson::Value&);
     BaseClient& client;
     Guild& guild;
 
@@ -42,6 +43,9 @@ public:
     std::string name;
     int permissions;
     int position;
+
+public:
+    bool HasPerm(int perm_mask);
 };
 
 }
