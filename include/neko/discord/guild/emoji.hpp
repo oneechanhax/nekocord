@@ -31,10 +31,10 @@ class Guild;
 class Emoji {
     friend Guild;
 public:
-    Emoji(Guild&, const rapidjson::Value&);
+    Emoji(Guild*, const rapidjson::Value&);
     ~Emoji();
-    BaseClient& client;
-    Guild& guild;
+    BaseClient* client;
+    Guild* guild;
     Snowflake id;
 
     bool animated;

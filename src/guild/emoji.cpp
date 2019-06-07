@@ -24,8 +24,8 @@
 
 namespace neko::discord {
 
-Emoji::Emoji(Guild& _guild, const rapidjson::Value& data)
-    : client(_guild.client), guild(_guild) {
+Emoji::Emoji(Guild* _guild, const rapidjson::Value& data)
+    : client(_guild->client), guild(_guild) {
     this->id = atol(data["id"].GetString());
 
     this->animated = data["animated"].GetBool();
@@ -36,11 +36,11 @@ Emoji::Emoji(Guild& _guild, const rapidjson::Value& data)
     for (const rapidjson::Value& role : data["roles"].GetArray())
         this->roles.push_back(atol(role.GetString()));
 
-    this->client.emojis.insert({this->id, this});
+    this->client->emojis.insert({this->id, this});
 }
 
 Emoji::~Emoji() {
-    this->client.emojis.erase(this->id);
+    this->client->emojis.erase(this->id);
 }
 
 

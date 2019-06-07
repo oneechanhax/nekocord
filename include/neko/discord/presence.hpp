@@ -38,9 +38,9 @@ public:
 class User;
 class Presence {
 public:
-    Presence(BaseClient&, const rapidjson::Value&);
-    Presence(User&, const rapidjson::Value&);
-    Presence& Update(const rapidjson::Value&);
+    Presence(BaseClient*, const rapidjson::Value&);
+    Presence(User*, const rapidjson::Value&);
+    Presence* Update(const rapidjson::Value&);
     class Game {
         friend Presence;
         Game(const rapidjson::Value&);
@@ -51,7 +51,7 @@ public:
         std::string state;
         int type;
     };
-    User& user;
+    User* user;
     std::optional<Game> game;
     std::string status;
 };

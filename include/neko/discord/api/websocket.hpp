@@ -27,65 +27,18 @@
 
 namespace neko::discord::api {
 namespace ws = websocketpp;
-using namespace std::chrono_literals;
 
 class Websocket {
 public:
     using IntSocket = ws::client<ws::config::asio_tls_client>; // Internal
     using MsgFunc = std::function<void(std::string_view)>;
     using ErrFunc = std::function<void()>;
-    Websocket(){
-        // Setup the socket
-        this->socket.clear_access_channels(ws::log::alevel::all);
-        this->socket.set_tls_init_handler([](auto) {
-    		return ws::lib::make_shared<asio::ssl::context>(asio::ssl::context::tlsv1);
-        });
-        this->socket.init_asio();
-        this->socket.set_message_handler([this](ws::connection_hdl hdl, ws::config::asio_client::message_type::ptr msg){
-            this->msg_callback(std::string_view(msg->get_payload().data(), msg->get_payload().size()));
-        });
-    }
-    ~Websocket(){
-        if (this->IsConnected())
-            this->Close(1000, "Websocket: Destructor called");
-    }
-    void Start(const std::string& uri){
-        // Setup our connection
-        ws::lib::error_code ec;
-        IntSocket::connection_ptr con = this->socket.get_connection(uri, ec);
-        if (ec)
-            throw std::runtime_error("Websocket error connecting: " + ec.message());
-        this->handle = con->get_handle();
-        this->socket.connect(con);
-        std::thread thread([this](){
-            this->expecting_stop = false;
-            this->stopped = false;
-            this->socket.run();
-            this->stopped = true;
-            if (!this->expecting_stop)
-                this->err_callback();
-        });
-        thread.detach();
-    }
-    void Close(int code, const std::string& reason) {
-        this->expecting_stop = true;
-        ws::lib::error_code err;
-        //if (!this->handle.expired())
-            this->socket.close(handle, code, reason, err);
-        while(!this->stopped)
-            std::this_thread::sleep_for(25ms);
-    }
-    void Terminate() {
-        this->expecting_stop = true;
-        std::cerr << "Websocket: Terminate not implimented." << std::endl;
-    }
-    void Send(std::string_view msg) {
-        websocketpp::lib::error_code ec;
-        this->socket.send(this->handle, msg.data(), msg.size(),
-            ws::frame::opcode::text, ec);
-        if (ec)
-            throw std::runtime_error("Websocket: Unable to send message.");
-    }
+    Websocket();
+    ~Websocket();
+    void Start(const std::string& uri);
+    void Close(int code, const std::string& reason);
+    void Terminate();
+    void Send(std::string_view msg);
     bool IsConnected() { return !this->stopped; }
     void SetMessageCallback(MsgFunc f) { this->msg_callback = f; };
     void SetErrorCallback(ErrFunc f) { this->err_callback = f; };

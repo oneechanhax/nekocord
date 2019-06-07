@@ -26,7 +26,7 @@
 
 namespace neko::discord {
 
-Attachment::Attachment(const rapidjson::Value& data){
+Attachment::Attachment(const json::Value& data){
     this->id = atol(data["id"].GetString());
     this->filename = data["filename"].GetString();
     this->size = data["size"].GetInt();
@@ -36,45 +36,47 @@ Attachment::Attachment(const rapidjson::Value& data){
     this->width = data["width"].GetInt();
 }
 
-Embed::Thumbnail::Thumbnail(const rapidjson::Value& data) {
+Embed::Thumbnail::Thumbnail(const json::Value& data) {
     this->url = data["url"].GetString();
     this->proxy_url = data["proxy_url"].GetString();
     this->height = data["height"].GetInt();
     this->width = data["width"].GetInt();
 }
 
-Embed::Video::Video(const rapidjson::Value& data) {
+Embed::Video::Video(const json::Value& data) {
     this->url = data["url"].GetString();
     this->height = data["height"].GetInt();
     this->width = data["width"].GetInt();
 }
 
-Embed::Image::Image(const rapidjson::Value& data) {
+Embed::Image::Image(const json::Value& data) {
     this->url = data["url"].GetString();
     this->proxy_url = data["proxy_url"].GetString();
     this->height = data["height"].GetInt();
     this->width = data["width"].GetInt();
 }
 
-Embed::Provider::Provider(const rapidjson::Value& data) {
+Embed::Provider::Provider(const json::Value& data) {
     this->name = data["name"].GetString();
     this->url = data["url"].GetString();
 }
 
-Embed::Author::Author(const rapidjson::Value& data) {
+Embed::Author::Author(const json::Value& data) {
     this->name = data["name"].GetString();
     this->url = data["url"].GetString();
     this->icon_url = data["icon_url"].GetString();
     this->proxy_icon_url = data["proxy_icon_url"].GetString();
 }
 
-Embed::Footer::Footer(const rapidjson::Value& data) {
+Embed::Footer::Footer(const json::Value& data) {
     this->text = data["text"].GetString();
-    this->icon_url = data["icon_url"].GetString();
     this->proxy_icon_url = data["proxy_icon_url"].GetString();
+    auto find = data.FindMember("icon_url");
+    if (find != data.MemberEnd())
+        this->icon_url = find->value.GetString();
 }
 
-Embed::Field::Field(const rapidjson::Value& data) {
+Embed::Field::Field(const json::Value& data) {
     this->name = data["name"].GetString();
     this->value = data["value"].GetString();
     auto find = data.FindMember("inline");
@@ -82,7 +84,7 @@ Embed::Field::Field(const rapidjson::Value& data) {
         this->_inline = find->value.GetBool();
 }
 
-Embed::Embed(const rapidjson::Value& data) {
+Embed::Embed(const json::Value& data) {
 
     auto find = data.FindMember("title");
     if (find != data.MemberEnd())
@@ -122,27 +124,27 @@ Embed::Embed(const rapidjson::Value& data) {
 
     find = data.FindMember("fields");
     if (find != data.MemberEnd())
-        for (const rapidjson::Value& i : find->value.GetArray())
+        for (const json::Value& i : find->value.GetArray())
             this->fields.emplace_back(i);
 }
 
-Reaction::Reaction(BaseClient& client, const rapidjson::Value& data) {
+Reaction::Reaction(BaseClient* client, const json::Value& data) {
     this->count = data["count"].GetInt();
     this->me = data["me"].GetBool();
-    const rapidjson::Value& id = data["id"];
+    const json::Value& id = data["id"];
     if (!id.IsNull()) {
         this->id = atol(id.GetString());
-        this->emoji = &client.FetchEmoji(this->id);
+        this->emoji = client->FetchEmoji(this->id);
     }
     this->name = data["name"].GetString();
 };
 
-Activity::Activity(const rapidjson::Value& data) {
+Activity::Activity(const json::Value& data) {
     this->type = static_cast<Type>(data["type"].GetInt());
     this->party_id = data["party_id"].GetString();
 }
 
-Application::Application(const rapidjson::Value& data) {
+Application::Application(const json::Value& data) {
     this->id = atol(data["id"].GetString());
     this->cover_image = data["cover_image"].GetString();
     this->description = data["description"].GetString();
@@ -150,20 +152,20 @@ Application::Application(const rapidjson::Value& data) {
     this->name = data["name"].GetString();
 }
 
-Message::Message(BaseClient& _client, const rapidjson::Value& data)
-    : client(_client), channel(client.FetchChannel(atol(data["channel_id"].GetString()))) {
+Message::Message(BaseClient* _client, const json::Value& data)
+    : client(_client), channel(client->FetchChannel(atol(data["channel_id"].GetString()))) {
     this->id = atol(data["id"].GetString());
 
     // Update channel info
-    switch(this->channel.type) {
+    switch(this->channel->type) {
     case Channel::Type::kDm:
-        this->channel.GetDMChannel().last_message_id = this->id;
+        this->channel->GetDMChannel()->last_message_id = this->id;
         break;
     case Channel::Type::kGroupDm:
-        this->channel.GetGroupDMChannel().last_message_id = this->id;
+        this->channel->GetGroupDMChannel()->last_message_id = this->id;
         break;
-    //default:
-        // TODO, guild channels
+    default:
+        std::cout << "Message: TODO, guild last id!" << std::endl;
     }
 
     // Who
@@ -171,18 +173,20 @@ Message::Message(BaseClient& _client, const rapidjson::Value& data)
     if (find != data.MemberEnd()) // Webhook
         this->webhook_id = atol(find->value.GetString());
     else { // User
-        this->author = &this->client.FetchUser(data["author"]);
+        this->author = this->client->FetchUser(data["author"]);
+        // Guild
         find = data.FindMember("guild_id");
         if (find != data.MemberEnd()) {
-            Guild* guild = &this->client.FetchGuild(atol(find->value.GetString()));
-            for (const rapidjson::Value& role : data["mention_roles"].GetArray())
-                this->mention_roles.push_back(&this->guild->FetchRole(atol(role.GetString())));
+            Guild* guild = this->client->FetchGuild(atol(find->value.GetString()));
+            this->member = guild->FetchMember(this->author->id);
+            for (const json::Value& role : data["mention_roles"].GetArray())
+                this->mention_roles.push_back(this->guild->FetchRole(atol(role.GetString())));
         }
     }
 
     // When
     this->timestamp = data["timestamp"].GetString();
-    const rapidjson::Value& edit_time = data["edited_timestamp"];
+    const json::Value& edit_time = data["edited_timestamp"];
     if (!edit_time.IsNull())
         this->edited_timestamp = edit_time.GetString();
 
@@ -201,23 +205,23 @@ Message::Message(BaseClient& _client, const rapidjson::Value& data)
     find = data.FindMember("application");
     if (find != data.MemberEnd())
         this->application = Application(find->value);
-    for (const rapidjson::Value& user : data["mentions"].GetArray())
-        this->mentions.push_back(&this->client.FetchUser(user));
-    for (const rapidjson::Value& att : data["attachments"].GetArray())
+    for (const json::Value& user : data["mentions"].GetArray())
+        this->mentions.push_back(this->client->FetchUser(user));
+    for (const json::Value& att : data["attachments"].GetArray())
         this->attachments.push_back(Attachment(att));
-    for (const rapidjson::Value& embed : data["embeds"].GetArray())
+    for (const json::Value& embed : data["embeds"].GetArray())
         this->embeds.emplace_back(embed);
     find = data.FindMember("reactions");
     if (find != data.MemberEnd())
-        for(const rapidjson::Value& react : find->value.GetArray())
+        for(const json::Value& react : find->value.GetArray())
             this->reactions.push_back(Reaction(this->client, react));
 };
 
 void Message::Reply(std::string_view msg) {
     if (this->author)
-        this->channel.SendMessage("<@" + std::to_string(this->author->id) + ">, " + std::string(msg));
+        this->channel->SendMessage("<@" + std::to_string(this->author->id) + ">, " + std::string(msg));
     else
-        this->channel.SendMessage(msg);
+        this->channel->SendMessage(msg);
 }
 
 }

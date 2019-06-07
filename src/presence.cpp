@@ -33,22 +33,22 @@ Game::Game(const Value& data) {
     this->type = data["type"].GetInt();
 }
 
-Presence::Presence(BaseClient& client, const Value& data)
-    : Presence(client.FetchUser(atol(data["user"]["id"].GetString())), data) {}
+Presence::Presence(BaseClient* client, const Value& data)
+    : Presence(client->FetchUser(atol(data["user"]["id"].GetString())), data) {}
 
-Presence::Presence(User& _user, const Value& data)
+Presence::Presence(User* _user, const Value& data)
     : user(_user) {
     this->Update(data);
 }
 
-Presence& Presence::Update(const Value& data) {
+Presence* Presence::Update(const Value& data) {
     this->status = data["status"].GetString();
 
     this->game.reset();
     const Value& game = data["game"];
     if (!game.IsNull())
         this->game = Game(game);
-    return *this;
+    return this;
 }
 
 }

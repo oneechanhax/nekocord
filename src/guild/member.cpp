@@ -19,14 +19,15 @@
 
 #include "guild/guild.hpp"
 #include "client.hpp"
+#include "user.hpp"
 
 #include "guild/member.hpp"
 
 namespace neko::discord {
 
 // GUILD_CREATE
-GuildMember::GuildMember(Guild& _guild, const rapidjson::Value& data)
-    : client(_guild.client), guild(_guild), user(_guild.client.FetchUser(data["user"])) {
+GuildMember::GuildMember(Guild* _guild, const rapidjson::Value& data)
+    : client(_guild->client), guild(_guild), user(_guild->client->FetchUser(data["user"])) {
 
     this->deaf = data["deaf"].GetBool();
     this->mute = data["mute"].GetBool();
@@ -44,6 +45,14 @@ void GuildMember::Update(const rapidjson::Value& data){
     this->roles.clear();
     for (const rapidjson::Value& role : data["roles"].GetArray())
         this->roles.push_back(atol(role.GetString()));
+}
+void GuildMember::AddRole(Snowflake i) {
+    this->client->http.Put("/guilds/" + std::to_string(this->guild->id) +
+                          "/members/" + std::to_string(this->user->id) +
+                          "/roles/" + std::to_string(i));
+}
+void GuildMember::AddRole(Role* r) {
+    this->AddRole(r->id);
 }
 
 }

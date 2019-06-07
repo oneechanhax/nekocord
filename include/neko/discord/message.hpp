@@ -24,11 +24,12 @@
 #include "snowflake.hpp"
 
 namespace neko::discord {
+namespace json = rapidjson;
 
 class Message;
 class Attachment {
     friend Message;
-    Attachment(const rapidjson::Value&);
+    Attachment(const json::Value&);
 public:
     Snowflake id;
     std::string filename;
@@ -42,11 +43,11 @@ public:
 class Embed {
 public:
     Embed(){}
-    Embed(const rapidjson::Value&);
+    Embed(const json::Value&);
     class Thumbnail {
     public:
         Thumbnail(){}
-        Thumbnail(const rapidjson::Value&);
+        Thumbnail(const json::Value&);
         std::string url;
         std::string proxy_url;
         int height = 0;
@@ -55,7 +56,7 @@ public:
     class Video {
     public:
         Video(){}
-        Video(const rapidjson::Value&);
+        Video(const json::Value&);
         std::string url;
         int height = 0;
         int width = 0;
@@ -63,7 +64,7 @@ public:
     class Image {
     public:
         Image(){}
-        Image(const rapidjson::Value&);
+        Image(const json::Value&);
         std::string url;
         std::string proxy_url;
         int height = 0;
@@ -72,14 +73,14 @@ public:
     class Provider {
     public:
         Provider(){}
-        Provider(const rapidjson::Value&);
+        Provider(const json::Value&);
         std::string name;
         std::string url;
     };
     class Author {
     public:
         Author(){}
-        Author(const rapidjson::Value&);
+        Author(const json::Value&);
         std::string name;
         std::string url;
         std::string icon_url;
@@ -88,7 +89,7 @@ public:
     class Footer {
     public:
         Footer(){}
-        Footer(const rapidjson::Value&);
+        Footer(const json::Value&);
         std::string text;
         std::string icon_url;
         std::string proxy_icon_url;
@@ -96,7 +97,7 @@ public:
     class Field {
     public:
         Field(){}
-        Field(const rapidjson::Value&);
+        Field(const json::Value&);
         std::string name;
         std::string value;
         bool _inline = false;
@@ -120,7 +121,7 @@ class BaseClient;
 class Emoji;
 class Reaction {
     friend Message;
-    Reaction(BaseClient&, const rapidjson::Value&);
+    Reaction(BaseClient*, const json::Value&);
 public:
     int count;
     bool me;
@@ -132,7 +133,7 @@ public:
 
 class Activity {
     friend Message;
-    Activity(const rapidjson::Value&);
+    Activity(const json::Value&);
 public:
     enum class Type { kJoin, kSpectate, kListen, kJoinRequest } type;
     std::string party_id;
@@ -140,7 +141,7 @@ public:
 
 class Application {
     friend Message;
-    Application(const rapidjson::Value&);
+    Application(const json::Value&);
 public:
     Snowflake id;
     std::string cover_image;
@@ -156,15 +157,15 @@ class Guild;
 class Role;
 class Message {
 public:
-    Message(BaseClient& client, const rapidjson::Value&);
-    BaseClient& client;
+    Message(BaseClient* client, const json::Value&);
+    BaseClient* client;
     Snowflake id;
 
     // Who
     User* author = nullptr;
     GuildMember* member = nullptr;
     // Where
-    Channel& channel;
+    Channel* channel;
     Guild* guild = nullptr;
     // What
     std::string content;

@@ -30,10 +30,10 @@ class Guild;
 class GuildMember;
 class Role {
 public:
-    Role(Guild&, const rapidjson::Value&);
-    Role(Guild&, Snowflake, const rapidjson::Value&);
-    BaseClient& client;
-    Guild& guild;
+    Role(Guild*, const rapidjson::Value&);
+    Role(Guild*, Snowflake, const rapidjson::Value&);
+    BaseClient* client;
+    Guild* guild;
 
     uint16_t color;
     bool hoist;

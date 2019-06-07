@@ -44,6 +44,8 @@ public:
     void onMessageCreate(Message& msg) {
         if (StartsWith(msg.content, "!ping"))
             msg.Reply("Pong!");
+        else if (msg.content == "!register")
+            msg.member->AddRole(371269070647197699);
     }
 };
 

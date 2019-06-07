@@ -26,6 +26,7 @@
 #include "../snowflake.hpp"
 
 namespace neko::discord {
+namespace json = rapidjson;
 
 class PermissionOverwrite {
 public:
@@ -41,19 +42,18 @@ class Guild;
 class GuildChannel {
 protected:
     friend Channel;
-    GuildChannel(Channel&, Guild&, const rapidjson::Value&);
+    GuildChannel(Channel*, Guild*, const json::Value&);
     ~GuildChannel();
     void Update(const rapidjson::Value&);
 public:
-    Channel& channel;
-    Guild& guild;
+    Channel* channel;
+    Guild* guild;
 
     std::string name;
     bool nsfw = false;
     std::vector<PermissionOverwrite> permission_overwrites;
     int position;
     Snowflake parent_id;
-    //GuildChannel* parent;
 };
 
 }

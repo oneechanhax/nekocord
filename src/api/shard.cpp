@@ -24,13 +24,21 @@
 
 namespace neko::discord::api {
 using namespace std::string_view_literals;
+using namespace std::chrono_literals;
 
-Shard::Shard(BaseClient& _client, int _id) : client(_client), id(_id){
+Shard::Shard(BaseClient* _client, int _id) : client(_client), id(_id){
     this->HardReset();
     this->socket.SetMessageCallback([this](std::string_view msg){
-        this->Recieve(msg);
+        this->RecieveMessage(msg);
+    });
+    this->socket.SetErrorCallback([this](){
+        std::cerr << "Shard: Unknown websocket error, reconnecting!" << std::endl;
+        this->Disconnect(true);
     });
     this->Connect();
+}
+Shard::~Shard(){
+    this->Disconnect(false);
 }
 void Shard::Connect() {
     if(this->socket.IsConnected())
@@ -54,7 +62,7 @@ void Shard::Disconnect(bool reconnect){
         std::cerr << "Error disconneting: " << e.what() << std::endl;
     }
 
-    this->client.onDisconnect();
+    this->client->onDisconnect();
 
     this->Reset();
     if(reconnect && !this->session_id.empty()) {
@@ -90,10 +98,10 @@ void Shard::HardReset() {
 
 // Send our auth info to discord
 void Shard::Identify() {
-
+    std::cout << "Shard: Idendifying" << std::endl;
     // Gather
-    auto token = json::StringRef(this->client.token.data(),
-                                 this->client.token.size());
+    auto token = json::StringRef(this->client->token.data(),
+                                 this->client->token.size());
 
     std::string_view os = "Unknown"sv; // save us the strlens
     if constexpr (plat::kLinux)
@@ -122,10 +130,11 @@ void Shard::Identify() {
 };
 
 void Shard::Resume(){
+    std::cout << "Shard: Resuming" << std::endl;
     this->state = State::kReconnecting;
     // Gather data
-    auto token = json::StringRef(this->client.token.data(),
-                                 this->client.token.size());
+    auto token = json::StringRef(this->client->token.data(),
+                                 this->client->token.size());
     auto ses_id = json::StringRef(this->session_id.data(),
                                   this->session_id.size());
     // Write
@@ -147,8 +156,6 @@ void Shard::Send(const json::Value& msg) {
 
 void Shard::Heartbeat() {
     // Check for acknowledge
-    if (this->state != State::kReady || this->state != State::kConnecting)
-        throw std::runtime_error("Heartbeat: not read");
     if (!this->last_heartbeat_ack) {
         std::cerr << "Shard: Heartbeat not acknowledged, reconnecting!" << std::endl;
         this->Disconnect(true);
@@ -166,7 +173,7 @@ void Shard::Heartbeat() {
 }
 
 void Shard::InitWebsocket() {
-        if(this->client.token.empty()) {
+        if(this->client->token.empty()) {
             try {
                 this->Disconnect(false);
             } catch(...){}
@@ -175,7 +182,7 @@ void Shard::InitWebsocket() {
 
         this->state = State::kConnecting;
 
-        this->socket.Start(HttpMgr::GetGateway());
+        this->socket.Start(RestAPI::GetGateway());
         std::thread wait([this](){
             std::this_thread::sleep_for(5s);
             if (this->state == State::kConnecting) {
@@ -186,44 +193,44 @@ void Shard::InitWebsocket() {
         wait.detach();
 }
 
-void RecieveMessage(std::string_view raw) {
+void Shard::RecieveMessage(std::string_view raw) {
     json::Document msg;
-    parsed.Parse(raw.data(), raw.size());
+    msg.Parse(raw.data(), raw.size());
 
     // Save our sequence
     auto find = msg.FindMember("s");
     if (find != msg.MemberEnd()) {
         int s = find->value.GetInt();
-        if(s > this->sequence + 1 && this->status != Status::kReconnecting)
-            std::cerr << "Shard: Non-consecutive sequence (" << this->sequence << " -> " << s << std::endl;
-        this.sequence = s;
+        if(s > this->sequence + 1 && this->state != State::kReconnecting)
+            std::cerr << "Shard: Non-consecutive sequence " << this->sequence << " -> " << s << std::endl;
+        this->sequence = s;
     }
     // Do events
     const json::Value& op = msg["op"];
     switch(op.GetInt()) {
     case 0: { // Dispatch
-        this->sequence = msg["s"].GetInt();
-        json::Value& t = msg["t"];
-        json::Value& d = msg["d"];
-        std::string_view event(e.GetString(), e.GetStringLength());
+        json::Value& t = msg["t"]; // Event
+        json::Value& d = msg["d"]; // Event data
+        std::string_view event(t.GetString(), t.GetStringLength());
         // Ready handler
-        if (this->status != Status::kReady &&
+        if (this->state != State::kReady &&
             (event == "READY"sv || event == "RESUMED"sv)) {
 
-            this->connectAttempts = 0;
-            this.reconnect->interval = 1000;
-            this->status = Status::kReady;
-            this.session_id = std::string(d.GetString(), d.GetStringLength());
+            this->connect_attempts = 0;
+            this->reconnect_interval = 1000;
+            this->state = State::kReady;
+            json::Value& s = d["session_id"];
+            this->session_id = std::string(s.GetString(), s.GetStringLength());
         }
-        this->client.EmitEvent(event, json["d"]);
+        this->client->EmitEvent(event, d);
         break;
     }
     case 1: { // Heartbeat
         this->Heartbeat();
         break;
     }
-    case OPCodes.INVALID_SESSION: {
-        this.session_id.clear();
+    case 9: { // Invalid session
+        this->session_id.clear();
         std::cerr << "Shard: Invalid session, reidentifying!" << std::endl;
         this->Identify();
         break;
@@ -234,35 +241,36 @@ void RecieveMessage(std::string_view raw) {
     }
     case 10: { // Hello
         json::Value& d = msg["d"];
-        int hb_int = d["heartbeat_interval"].GetInt()
+        int hb_int = d["heartbeat_interval"].GetInt();
         if (hb_int > 0) {
             if(!this->heartbeat_interval.IsRunning()) {
                 this->heartbeat_interval.SetErr([this](std::exception err){
                     std::cerr << err.what() << std::endl;
                 });
-                this.heartbeat_interval.Set([this](){
+                this->heartbeat_interval.Set([this](){
                    this->Heartbeat();
-               }, std::chrono::miliseconds(hbint));
+               }, hb_int);
             }
 
             this->state = State::kNearly;
 
-            if(this.sessionID) {
+            if(!this->session_id.empty()) {
                this->Resume();
             } else {
                this->Identify();
             }
             this->Heartbeat();
             break;
-           }
-           case OPCodes.HEARTBEAT_ACK: {
-               this.lastHeartbeatAck = true;
-               this.lastHeartbeatReceived = new Date().getTime();
-               break;
-           }
-           default: {
-               this.emit("unknown", packet, this.id);
-               break;
-           }
-       }
+        }
+    }
+    case 11: { // Heartbeat ack
+        this->last_heartbeat_ack = true;
+        this->last_heartbeat_received.Reset();
+        break;
+    }
+    default: {
+        std::cerr << "Shard: Recieved unknown event\n\t" << raw << std::endl;
+    }}
+}
+
 }

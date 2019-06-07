@@ -24,7 +24,7 @@
 #include <rapidjson/document.h>
 
 #include "websocket.hpp"
-#include "http.hpp"
+#include "rest.hpp"
 
 namespace neko::discord {
 class BaseClient;
@@ -34,9 +34,9 @@ namespace json = rapidjson;
 
 class Shard {
 public:
-    Shard(BaseClient& client, int id);
+    Shard(BaseClient* client, int id);
     ~Shard();
-    BaseClient& client;
+    BaseClient* client;
     const int id;
 
     enum class State {
@@ -62,7 +62,7 @@ private:
     State state;
     int connect_attempts;
     int reconnect_interval;
-    void Recieve(std::string_view);
+    void RecieveMessage(std::string_view);
 
     // Resuming
     std::string session_id;

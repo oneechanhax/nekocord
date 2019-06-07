@@ -25,19 +25,19 @@
 #include "user.hpp"
 #include "client.hpp"
 
-#include "api/http.hpp"
+#include "api/rest.hpp"
 
-namespace neko::discord::web {
+namespace neko::discord::api {
 
-HttpMgr::HttpMgr(BaseClient& _client) : client(_client) {}
+RestAPI::RestAPI(BaseClient* _client) : client(_client) {}
 
-cpr::Header HttpMgr::GetBaseHeader() {
+cpr::Header RestAPI::GetBaseHeader() {
     cpr::Header header;
     // Authorize
-    if (this->client.user) { // lets ensure we at least got READY
+    if (this->client->user) { // lets ensure we at least got READY
         header.insert({"Authorization",
-        this->client.user->bot ? "Bot " + this->client.token
-        : this->client.token});
+        this->client->user->bot ? "Bot " + this->client->token
+        : this->client->token});
     }
     // The useragent
     header.insert({"User-Agent",
@@ -46,14 +46,14 @@ cpr::Header HttpMgr::GetBaseHeader() {
     return header;
 }
 
-std::string HttpMgr::Get(const std::string& url) {
-    RateLimiter::Type t = this->rate_limiter.Enforce(url);
-    cpr::Response reply = cpr::Get(cpr::Url("https://discordapp.com/api" + url), this->GetBaseHeader());
-    this->rate_limiter.Refresh(t, reply);
+std::string RestAPI::Get(const std::string& url) {
+    cpr::Response reply = cpr::Get(cpr::Url("https://discordapp.com/api" + url), RestAPI::GetBaseHeader());
+    if (reply.error)
+        throw std::runtime_error("RestAPI: error getting! " + reply.error.message);
     return reply.text;
 }
 
-std::int32_t HttpMgr::Post(const std::string& url, const rapidjson::Value& msg) {
+void RestAPI::Post(const std::string& url, const rapidjson::Value& msg) {
     using namespace rapidjson;
     StringBuffer buf;
     Writer<StringBuffer> writer(buf);
@@ -61,24 +61,26 @@ std::int32_t HttpMgr::Post(const std::string& url, const rapidjson::Value& msg) 
     // Send away
     return this->Post(url, std::string(buf.GetString(), buf.GetSize()));
 }
-std::int32_t HttpMgr::Post(const std::string& url, const std::string& msg) {
-    RateLimiter::Type t = this->rate_limiter.Enforce(url);
+void RestAPI::Post(const std::string& url, const std::string& msg) {
 
-    cpr::Header header = this->GetBaseHeader();
+    cpr::Header header = RestAPI::GetBaseHeader();
     header.insert({"Content-Type", "application/json"});
     header.insert({"Content-Length", std::to_string(msg.size())});
     cpr::Response reply = cpr::Post(cpr::Url("https://discordapp.com/api" + url),
                           cpr::Body(msg), header);
-
-    this->rate_limiter.Refresh(t, reply);
-    return reply.status_code;
+    if (reply.error)
+        throw std::runtime_error("RestAPI: error posting! " + reply.error.message);
 }
-
+void RestAPI::Put(const std::string& url) {
+    cpr::Response reply = cpr::Put(cpr::Url("https://discordapp.com/api" + url), RestAPI::GetBaseHeader());
+    if (reply.error)
+        throw std::runtime_error("RestAPI: error putting! " + reply.error.message);
+}
 // Utils
-std::string HttpMgr::GetGateway(bool force) {
+std::string RestAPI::GetGateway(bool force) {
 
-    static fs::path cache_dir = fs::temp_directory_path() / "nekocord";
-    static fs::path cache_path = cache_dir / "gateway.txt";
+    static const fs::path cache_dir = fs::temp_directory_path() / "nekocord";
+    static const fs::path cache_path = cache_dir / "gateway.txt";
     if (!force) {
         std::ifstream read(cache_path);
         if (read) {
@@ -87,19 +89,16 @@ std::string HttpMgr::GetGateway(bool force) {
             return ret;
         }
     }
-    // Cache unavailable
 
-    // Get our gateway
     cpr::Response responce = cpr::Get(cpr::Url("https://discordapp.com/api/gateway"));
-    if (!responce.text.size())
-        throw std::runtime_error("Failed to retrieve gateway, err: " + std::to_string(responce.status_code) + ".");
+    if (responce.error) {
+        std::cerr << "RestAPI: Failed to get gateway, using fallback!" << std::endl;
+        return "wss://gateway.discord.gg";
+    }
 
-    // Seperate it from json
     using namespace rapidjson;
     Document json;
     json.Parse(responce.text.data(), responce.text.size());
-
-    // {"url: "wss://gateway.discord.gg"}
     Value& i = json["url"];
     std::string gateway = std::string(i.GetString(), i.GetStringLength());
 

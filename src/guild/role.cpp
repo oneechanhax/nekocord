@@ -24,9 +24,9 @@
 namespace neko::discord {
 
 // GUILD_CREATE GUILD_UPDATE
-Role::Role(Guild& _guild, const rapidjson::Value& data)
+Role::Role(Guild* _guild, const rapidjson::Value& data)
     : Role(_guild, atol(data["id"].GetString()), data) {}
-Role::Role(Guild& _guild, Snowflake _id, const rapidjson::Value& data) : guild(_guild), client(_guild.client) {
+Role::Role(Guild* _guild, Snowflake _id, const rapidjson::Value& data) : guild(_guild), client(_guild->client) {
     this->id = _id;
 
     this->color = data["color"].GetInt();

@@ -36,10 +36,10 @@ class GuildMember {
     void Update(const rapidjson::Value&);
     // TODO, Update
 public:
-    GuildMember(Guild&, const rapidjson::Value&);
-    BaseClient& client;
-    Guild& guild;
-    User& user;
+    GuildMember(Guild*, const rapidjson::Value&);
+    BaseClient* client;
+    Guild* guild;
+    User* user;
 
     bool deaf;
     bool mute;
@@ -49,6 +49,10 @@ public:
 public:
     bool HasRole(Snowflake);
     bool HasRole(Role&);
+
+    // Methods
+    void AddRole(Snowflake);
+    void AddRole(Role*);
 };
 
 }

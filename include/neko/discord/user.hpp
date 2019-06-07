@@ -29,8 +29,8 @@ namespace neko::discord {
 class BaseClient;
 class User {
 public:
-    User(BaseClient& _client, Snowflake id, const rapidjson::Value&);
-    BaseClient& client;
+    User(BaseClient* _client, Snowflake id, const rapidjson::Value&);
+    BaseClient* client;
 
     Snowflake id;
     std::string username;

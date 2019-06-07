@@ -26,26 +26,27 @@
 #include "snowflake.hpp"
 
 namespace neko::discord {
+namespace json = rapidjson;
 
 class Channel;
 class User;
 class DMChannel {
     friend Channel;
-    DMChannel(Channel& channel, const rapidjson::Value&);
+    DMChannel(Channel* channel, const json::Value&);
     ~DMChannel(){}
 public:
-    Channel& channel;
+    Channel* channel;
     Snowflake last_message_id;
-    User& recipient;
+    User* recipient;
 };
 
 class GroupDMChannel {
     friend Channel;
-    GroupDMChannel(Channel& channel, const rapidjson::Value&);
+    GroupDMChannel(Channel* channel, const json::Value&);
     ~GroupDMChannel(){}
 public:
-    void Update(const rapidjson::Value&);
-    Channel& channel;
+    void Update(const json::Value&);
+    Channel* channel;
     std::string icon;
     Snowflake last_message_id;
     Snowflake owner_id;
@@ -60,15 +61,15 @@ class Channel {
 protected:
     friend BaseClient;
     friend Guild;
-    Channel& Update(const rapidjson::Value&); // CHANNEL_UPDATE
+    Channel* Update(const rapidjson::Value&); // CHANNEL_UPDATE
     // CHANNEL_CREATE
-    Channel(BaseClient& client, const rapidjson::Value&);
-    Channel(BaseClient& client, Snowflake id, const rapidjson::Value&);
+    Channel(BaseClient* client, const rapidjson::Value&);
+    Channel(BaseClient* client, Snowflake id, const rapidjson::Value&);
     // GUILD_CREATE
-    Channel(Guild& guild, const rapidjson::Value&);
+    Channel(Guild* guild, const rapidjson::Value&);
     ~Channel(); // CHANNEL_DESTROY
 public:
-    BaseClient& client;
+    BaseClient* client;
     Snowflake id;
 
     enum class Type {
@@ -79,9 +80,9 @@ public:
         kCategory = 4
     } type;
 
-    DMChannel& GetDMChannel();
-    GroupDMChannel& GetGroupDMChannel();
-    GuildChannel& GetGuildChannel();
+    DMChannel* GetDMChannel();
+    GroupDMChannel* GetGroupDMChannel();
+    GuildChannel* GetGuildChannel();
 private:
     union {
         DMChannel* dm_channel;
@@ -93,6 +94,7 @@ private:
 public:
     void SendMessage(std::string_view, bool tts = false);
     void SendMessage(const Embed&);
+    //static std::string GetChannel() =                                                (chanID) => `/channels/${chanID}`;
 };
 
 }

@@ -26,38 +26,38 @@
 #include "channel.hpp"
 
 namespace neko::discord {
-using namespace rapidjson;
+namespace json = rapidjson;
 
 // CHANNEL_CREATE
-Channel::Channel(BaseClient& _client, const Value& data)
+Channel::Channel(BaseClient* _client, const json::Value& data)
     : Channel(_client, atol(data["id"].GetString()), data){}
-Channel::Channel(BaseClient& _client, Snowflake id, const Value& data)
+Channel::Channel(BaseClient* _client, Snowflake id, const json::Value& data)
     : client(_client) {
     this->id = id;
 
     this->type = static_cast<Type>(data["type"].GetInt());
     switch(this->type) {
     case Type::kDm:
-        this->dm_channel = new DMChannel(*this, data);
+        this->dm_channel = new DMChannel(this, data);
         break;
     case Type::kGroupDm:
-        this->group_dm_channel = new GroupDMChannel(*this, data);
+        this->group_dm_channel = new GroupDMChannel(this, data);
         break;
     case Type::kText:
     case Type::kCategory:
     case Type::kVoice:
-        this->guild_channel = new GuildChannel(*this, this->client.FetchGuild(data["guild_id"]), data);
+        this->guild_channel = new GuildChannel(this, this->client->FetchGuild(data["guild_id"]), data);
     }
 }
 
 // GUILD_CREATE
-Channel::Channel(Guild& guild, const Value& data) : client(guild.client) {
+Channel::Channel(Guild* guild, const json::Value& data) : client(guild->client) {
     this->id = atol(data["id"].GetString());
 
     // To ensure its guild channel
     this->type = static_cast<Type>(data["type"].GetInt());
     assert(this->type == Type::kText || this->type == Type::kCategory || this->type == Type::kVoice);
-    this->guild_channel = new GuildChannel(*this, guild, data);
+    this->guild_channel = new GuildChannel(this, guild, data);
 }
 
 Channel::~Channel() {
@@ -76,7 +76,7 @@ Channel::~Channel() {
     }
 }
 
-Channel& Channel::Update(const Value& data) {
+Channel* Channel::Update(const json::Value& data) {
     assert(this->id == atol(data["id"].GetString()));
     switch(this->type) {
     case Type::kDm:
@@ -90,53 +90,53 @@ Channel& Channel::Update(const Value& data) {
         this->guild_channel->Update(data);
         break;
     }
-    return *this;
+    return this;
 }
 
-DMChannel& Channel::GetDMChannel() {
+DMChannel* Channel::GetDMChannel() {
     assert(this->type == Type::kDm);
-    return *this->dm_channel;
+    return this->dm_channel;
 }
-GroupDMChannel& Channel::GetGroupDMChannel(){
+GroupDMChannel* Channel::GetGroupDMChannel(){
     assert(this->type == Type::kGroupDm);
-    return *this->group_dm_channel;
+    return this->group_dm_channel;
 }
-GuildChannel& Channel::GetGuildChannel() {
+GuildChannel* Channel::GetGuildChannel() {
     assert(this->type == Type::kText || this->type == Type::kCategory || this->type == Type::kVoice);
-    return *this->guild_channel;
+    return this->guild_channel;
 }
 
 void Channel::SendMessage(std::string_view data, bool tts) {
     assert(this->type == Type::kDm || this->type == Type::kGroupDm || this->type == Type::kText);
-    Document msg(kObjectType);
+    json::Document msg(json::kObjectType);
     auto& alloc = msg.GetAllocator();
 
-    msg.AddMember("content", StringRef(data.data(), data.size()), alloc);
+    msg.AddMember("content", json::StringRef(data.data(), data.size()), alloc);
     if (tts)
-        msg.AddMember("tts", Value().SetBool(true), alloc);
+        msg.AddMember("tts", json::Value().SetBool(true), alloc);
 
-    this->client.http.Post("/channels/" + std::to_string(this->id) + "/messages", msg);
+    this->client->http.Post("/channels/" + std::to_string(this->id) + "/messages", msg);
 }
 
-DMChannel::DMChannel(Channel& _channel, const Value& data)
+DMChannel::DMChannel(Channel* _channel, const json::Value& data)
     : channel(_channel),
-    recipient(_channel.client.FetchUser(data["recipients"][0])) {
+    recipient(_channel->client->FetchUser(data["recipients"][0])) {
     this->last_message_id = atol(data["last_message_id"].GetString());
 }
 
-GroupDMChannel::GroupDMChannel(Channel& _channel, const Value& data)
+GroupDMChannel::GroupDMChannel(Channel* _channel, const json::Value& data)
     : channel(_channel) {
     this->last_message_id = atol(data["last_message_id"].GetString());
     this->Update(data);
 }
 
-void GroupDMChannel::Update(const rapidjson::Value& data) {
+void GroupDMChannel::Update(const json::Value& data) {
     this->icon = data["icon"].GetString();
     this->owner_id = atol(data["owner_id"].GetString());
 
     this->recipients.clear();
-    for (const Value& member : data["recipients"].GetArray())
-        this->recipients.push_back(&this->channel.client.FetchUser(member));
+    for (const json::Value& member : data["recipients"].GetArray())
+        this->recipients.push_back(this->channel->client->FetchUser(member));
 }
 
 }

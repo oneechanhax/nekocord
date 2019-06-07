@@ -22,7 +22,7 @@
 namespace neko::discord {
 
 // READY GUILD_CREATE
-User::User(BaseClient& _client, Snowflake id, const rapidjson::Value& data) : client(_client) {
+User::User(BaseClient* _client, Snowflake id, const rapidjson::Value& data) : client(_client) {
     this->id = id;
     this->username = data["username"].GetString();
     this->discriminator = data["discriminator"].GetString();

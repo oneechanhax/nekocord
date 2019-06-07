@@ -35,14 +35,14 @@ class BaseClient;
 class GuildChannel;
 class Guild {
     friend BaseClient;
-    Guild(BaseClient& _client, const json::Value&);
-    Guild(BaseClient& _client, Snowflake, const json::Value&);
-    Guild& Create(const json::Value&); // GUILD_CREATE
-    Guild& Update(const json::Value&); // GUILD_UPDATE
+    Guild(BaseClient* _client, const json::Value&);
+    Guild(BaseClient* _client, Snowflake, const json::Value&);
+    Guild* Create(const json::Value&); // GUILD_CREATE
+    Guild* Update(const json::Value&); // GUILD_UPDATE
     // GUILD_DELETE
     ~Guild();
 public:
-    BaseClient& client;
+    BaseClient* client;
     bool unavailable; // The guild could be unavailable
     Snowflake id;
 
@@ -58,8 +58,9 @@ public:
     std::string name;
     Snowflake owner_id;
 
-    GuildChannel& FetchChannel(Snowflake id, bool cache = true);
-    Role& FetchRole(Snowflake id);
+    GuildChannel* FetchChannel(Snowflake id, bool cache = true);
+    Role* FetchRole(Snowflake id);
+    GuildMember* FetchMember(Snowflake id, bool cache = true);
 };
 
 }

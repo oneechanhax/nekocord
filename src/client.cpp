@@ -30,17 +30,17 @@
 #include "client.hpp"
 
 namespace neko::discord {
-namespace rj = rapidjson;
+namespace json = rapidjson;
 
 BaseClient::BaseClient()
-    : http(*this) {}
+    : http(this) {}
 
 void BaseClient::Login(std::string_view _token, int num_shards) {
     if (!this->shards.empty())
         throw std::logic_error("BaseClient: Shards already exist, cant login until they shutdown");
     this->token = _token;
     for (int i = 0; i < num_shards; i++)
-        this->shards.push_back(new api::Shard(*this, i));
+        this->shards.push_back(new api::Shard(this, i));
 }
 
 void BaseClient::Disconnect() {
@@ -53,7 +53,7 @@ void BaseClient::Disconnect() {
 // Our main role with the events is to effitently keep our cache updated
 // Events send alot of data so we can do this as much as we can
 
-void BaseClient::EmitEvent(std::string_view event, const rj::Value& data) {
+void BaseClient::EmitEvent(std::string_view event, const json::Value& data) {
     using namespace std::string_view_literals;
 
     // Comparing string_views is extremely fast uwu
@@ -79,116 +79,123 @@ void BaseClient::EmitEvent(std::string_view event, const rj::Value& data) {
 }
 
 // Cache parsers
-void BaseClient::onReady(const rj::Value& data) {
+void BaseClient::onReady(const json::Value& data) {
 
     // Our user info
-    this->user = &this->FetchUser(data["user"]);
+    this->user = this->FetchUser(data["user"]);
 
     // We always recieve guild data
-    for (const rj::Value& v : data["guilds"].GetArray()) {
-        Guild* new_guild = new Guild(*this, v);
+    for (const json::Value& v : data["guilds"].GetArray()) {
+        Guild* new_guild = new Guild(this, v);
         this->guilds.insert({new_guild->id, new_guild});
     }
 
 
     this->onReady();
 }
-void BaseClient::onGuildCreate(const rj::Value& data) {
+void BaseClient::onGuildCreate(const json::Value& data) {
     // Since user accounts get guilds on the start, we need to check if we added it already
-    Snowflake id = ExtractId(data);
+    Snowflake id = atol(data["id"].GetString());
     auto find = this->guilds.find(id);
     if (find == this->guilds.end()) {
-        Guild* new_guild = new Guild(*this, id, data);
+        Guild* new_guild = new Guild(this, id, data);
         this->guilds.insert({new_guild->id, new_guild});
-        this->onGuildCreate(*new_guild);
+        this->onGuildCreate(new_guild);
     } else
         this->onGuildCreate(find->second->Create(data));
 }
-void BaseClient::onMessageCreate(const rj::Value& data) {
-    Message msg(*this, data);
-    this->onMessageCreate(msg);
+void BaseClient::onMessageCreate(const json::Value& data) {
+    Message msg(this, data);
+    this->onMessageCreate(&msg);
 }
-void BaseClient::onChannelCreate(const rj::Value& data) {
-    Channel* channel = new Channel(*this, data);
+void BaseClient::onChannelCreate(const json::Value& data) {
+    Channel* channel = new Channel(this, data);
     this->channels.insert({channel->id, channel});
-    this->onChannelCreate(*channel);
+    this->onChannelCreate(channel);
 }
-void BaseClient::onGuildUpdate(const rj::Value& data) {
-    Snowflake id = ExtractId(data);
+void BaseClient::onGuildUpdate(const json::Value& data) {
+    Snowflake id = atol(data["id"].GetString());
     auto find = this->guilds.find(id);
     assert(find != this->guilds.end());
     this->onGuildUpdate(find->second->Update(data));
 }
 
 // Info retrieval
-User& BaseClient::FetchUser(Snowflake id, bool cache) {
+User* BaseClient::FetchUser(Snowflake id, bool cache) {
     if (cache) {
         auto find = this->users.find(id);
         if (find != this->users.end())
-            return *find->second;
+            return find->second;
     }
     std::string r = this->http.Get("/users/" + std::to_string(id));
-    rj::Document data;
+    json::Document data;
     data.Parse(r.data(), r.size());
-    User* new_user = new User(*this, id, data);
+    User* new_user = new User(this, id, data);
     this->users.insert({id, new_user});
-    return *new_user;
+    return new_user;
 }
-Guild& BaseClient::FetchGuild(Snowflake id, bool cache){
+User* BaseClient::FetchUser(const json::Value& v) {
+    // Send away
+    return this->FetchUser(atol(v["id"].GetString()), v);
+}
+Guild* BaseClient::FetchGuild(Snowflake id, bool cache){
     if (cache) {
         auto find = this->guilds.find(id);
         if (find != this->guilds.end())
-            return *find->second;
+            return find->second;
     }
     std::string r = this->http.Get("/guilds/" + std::to_string(id));
-    rj::Document data;
+    json::Document data;
     data.Parse(r.data(), r.size());
-    Guild* new_guild = new Guild(*this, id, data);
+    Guild* new_guild = new Guild(this, id, data);
     this->guilds.insert({id, new_guild});
-    return *new_guild;
+    return new_guild;
 }
-Emoji& BaseClient::FetchEmoji(Snowflake id) {
+Guild* BaseClient::FetchGuild(const json::Value& v) {
+    return this->FetchGuild(atol(v["id"].GetString()), v);
+}
+Emoji* BaseClient::FetchEmoji(Snowflake id) {
     auto find = this->emojis.find(id);
     if (find == this->emojis.end())
         throw std::logic_error("Unable to find emoji");
-    return *find->second;
+    return find->second;
 }
-Channel& BaseClient::FetchChannel(Snowflake id) {
+Channel* BaseClient::FetchChannel(Snowflake id) {
     auto find = this->channels.find(id);
     if (find != this->channels.end())
-        return *find->second;
+        return find->second;
     std::string r = this->http.Get("/channels/" + std::to_string(id));
-    rj::Document data;
+    json::Document data;
     data.Parse(r.data(), r.size());
-    Channel* new_channel = new Channel(*this, id, data);
+    Channel* new_channel = new Channel(this, id, data);
     this->channels.insert({id, new_channel});
-    return *new_channel;
+    return new_channel;
 }
 
 // Cache
 // Internally caches data we already have
-User& BaseClient::FetchUser(Snowflake id, const rj::Value& data) {
+User* BaseClient::FetchUser(Snowflake id, const json::Value& data) {
     auto find = this->users.find(id);
     if (find != this->users.end())
-        return *find->second;
+        return find->second;
     else {
-        User* new_user = new User(*this, id, data);
+        User* new_user = new User(this, id, data);
         this->users.insert({id, new_user});
-        return *new_user;
+        return new_user;
     }
 }
-Guild& BaseClient::FetchGuild(Snowflake id, const rj::Value& data) {
+Guild* BaseClient::FetchGuild(Snowflake id, const json::Value& data) {
     auto find = this->guilds.find(id);
     if (find != this->guilds.end())
-        return *find->second;
+        return find->second;
     else {
-        Guild* new_guild = new Guild(*this, id, data);
+        Guild* new_guild = new Guild(this, id, data);
         this->guilds.insert({id, new_guild});
-        return *new_guild;
+        return new_guild;
     }
 }
 
-Snowflake ExtractId(const rj::Value& data) {
+Snowflake ExtractId(const json::Value& data) {
     return atol(data["id"].GetString());
 }
 
