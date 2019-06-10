@@ -18,8 +18,8 @@
  */
 
 #include <fstream>
+#include <filesystem>
 
-#include <neko/filesystem.hpp>
 #include <rapidjson/writer.h>
 
 #include "user.hpp"
@@ -28,6 +28,7 @@
 #include "api/rest.hpp"
 
 namespace neko::discord::api {
+namespace fs = std::filesystem;
 
 RestAPI::RestAPI(BaseClient* _client) : client(_client) {}
 

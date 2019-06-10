@@ -7,9 +7,9 @@
 [submodule "external/websocketpp"]
 	path = external/websocketpp
 	url = https://github.com/zaphoyd/websocketpp
-[submodule "external/nekolib"]
-	path = external/nekolib
-	url = https://github.com/oneechanhax/nekolib
 [submodule "utils/cotire"]
 	path = utils/cotire
 	url = https://github.com/sakra/cotire
+[submodule "external/nekolib"]
+	path = external/nekolib
+	url = https://github.com/oneechanhax/nekolib
