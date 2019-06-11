@@ -199,7 +199,7 @@ void Shard::RecieveMessage(std::string_view raw) {
 
     // Save our sequence
     auto find = msg.FindMember("s");
-    if (find != msg.MemberEnd()) {
+    if (find != msg.MemberEnd() && !find->value.IsNull()) {
         int s = find->value.GetInt();
         if(s > this->sequence + 1 && this->state != State::kReconnecting)
             std::cerr << "Shard: Non-consecutive sequence " << this->sequence << " -> " << s << std::endl;
