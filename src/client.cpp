@@ -22,6 +22,7 @@
 #include <neko/filesystem.hpp>
 #include <rapidjson/writer.h>
 
+#include "api/shard.hpp"
 #include "guild/guild.hpp"
 #include "channel.hpp"
 #include "message.hpp"

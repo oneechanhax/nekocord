@@ -22,13 +22,15 @@
 #include <rapidjson/document.h>
 
 #include "api/rest.hpp"
-#include "api/shard.hpp"
 #include "presence.hpp"
 #include "snowflake.hpp"
 
 namespace neko::discord {
 namespace json = rapidjson;
 
+namespace api {
+class Shard;
+}
 class Guild;
 class GuildMember;
 class Message;
@@ -41,6 +43,8 @@ public:
     BaseClient();
     void Login(std::string_view token, int num_shards = 1);
     void Disconnect();
+    void GetToken();
+
 // Events
 protected:
     virtual void onReady(){}
@@ -49,29 +53,28 @@ protected:
     virtual void onChannelCreate(Channel*){}
     virtual void onGuildUpdate(Guild*) {}
     virtual void onDisconnect() {}
+
 // Info retrieval
 public:
     const User* FetchClientUser();
-    //Invite FetchInvite(std::string_view);
     User* FetchUser(Snowflake id, bool cache = true); // Whether or not to use the cache
     Guild* FetchGuild(Snowflake id, bool cache = true);
     Emoji* FetchEmoji(Snowflake id);
     Channel* FetchChannel(Snowflake id);
-    //std::vector<VoiceRegion> FetchVoiceRegions();
-    //Webhook FetchWebhook(Snowflake id, std::string_view = std::string_view());
-    //std::string GenerateInvite()
-    //void SyncGuilds();
+    // This fetch user takes in data and caches it
+    User* FetchUser(Snowflake, const json::Value&);
+    User* FetchUser(const json::Value& v);
+    Guild* FetchGuild(Snowflake, const json::Value&);
+    Guild* FetchGuild(const json::Value& v);
 
 // Internal events
 private:
+    // Cache
     void onReady(const json::Value&);
     void onGuildCreate(const json::Value&);
     void onMessageCreate(const json::Value&);
     void onChannelCreate(const json::Value&);
     void onGuildUpdate(const json::Value&);
-
-
-// Cache
     User* user;
     std::unordered_map<Snowflake, Channel*> channels;
     std::unordered_map<Snowflake, Emoji*> emojis;
@@ -79,28 +82,18 @@ private:
     std::unordered_map<Snowflake, Presence> presences;
     std::unordered_map<Snowflake, User*> users;
 
-    friend Guild; // So they can fill the cache themselves
-    friend Channel;
-    friend DMChannel;
-    friend GroupDMChannel;
-    friend Emoji;
-    friend GuildMember;
-    friend Message;
-    // This fetch user takes in data and caches it
-    User* FetchUser(Snowflake, const json::Value&);
-    User* FetchUser(const json::Value& v);
-    Guild* FetchGuild(Snowflake, const json::Value&);
-    Guild* FetchGuild(const json::Value& v);
-
-// Connection info
+    // Connection info
     std::string token;
-
     friend api::RestAPI;
     api::RestAPI http;
-
     friend api::Shard;
     std::vector<api::Shard*> shards;
-    void EmitEvent(std::string_view event, const json::Value& msg);
+    void EmitEvent(std::string_view event, const json::Value& data);
+    // easy access
+    friend Channel;
+    friend Guild;
+    friend Emoji;
+    friend GuildMember;
 };
 
 }

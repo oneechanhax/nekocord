@@ -41,7 +41,7 @@ public:
 
     enum class State {
         kReady, // We recieved our READY event
-        kNearly, // We sent our IDENTITY, waiting for ready
+        kHello, // We sent our IDENTITY, waiting for ready
         kConnecting, // Trying to connect to the socket
         kReconnecting, // Got disconnected, trying again
         kDisconnected, // We are not connected at all

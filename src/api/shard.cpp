@@ -22,6 +22,8 @@
 
 #include "client.hpp"
 
+#include "api/shard.hpp"
+
 namespace neko::discord::api {
 using namespace std::string_view_literals;
 using namespace std::chrono_literals;
@@ -156,7 +158,7 @@ void Shard::Send(const json::Value& msg) {
 
 void Shard::Heartbeat() {
     // Check for acknowledge
-    if (!this->last_heartbeat_ack) {
+    if (this->state == State::kReady && !this->last_heartbeat_ack) {
         std::cerr << "Shard: Heartbeat not acknowledged, reconnecting!" << std::endl;
         this->Disconnect(true);
         return;
@@ -252,13 +254,14 @@ void Shard::RecieveMessage(std::string_view raw) {
                }, hb_int);
             }
 
-            this->state = State::kNearly;
+            this->state = State::kHello;
 
             if(!this->session_id.empty()) {
                this->Resume();
             } else {
                this->Identify();
             }
+            this->last_heartbeat_ack = true;
             this->Heartbeat();
             break;
         }
